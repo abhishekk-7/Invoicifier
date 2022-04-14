@@ -27,12 +27,15 @@ class InvoiceView(generics.GenericAPIView):
         return Response(serializer.data, status=201)
 
     def get(self, request):
-        try:
-            user = Users.objects.get(auth_token=request.headers['token'])
-        except:
-            return Response({"Error": "Invalid Token"}, status=400)
-        return Response({"Invoices to company": InvoiceDetails.objects.filter(buyer=user.company.company_name).values('id', 'invoice_amount', 'seller', 'buyer', 'acknowledged', 'settled'),
-                         "Invoices from company": InvoiceDetails.objects.filter(seller__company__company_name=user.company.company_name).values('id', 'invoice_amount', 'seller', 'buyer', 'acknowledged', 'settled')})
+        if 'token' in request.headers:
+            try:
+                user = Users.objects.get(auth_token=request.headers['token'])
+                return Response({"Invoices to company": InvoiceDetails.objects.filter(buyer=user.company.company_name).values('id', 'invoice_amount', 'seller', 'buyer', 'acknowledged', 'settled'),
+                                 "Invoices from company": InvoiceDetails.objects.filter(seller__company__company_name=user.company.company_name).values('id', 'invoice_amount', 'seller', 'buyer', 'acknowledged', 'settled')})
+
+            except:
+                return Response({"Error": "Invalid Token"}, status=400)
+        return Response(InvoiceDetails.objects.values('id', 'invoice_amount', 'seller', 'buyer', 'acknowledged', 'settled'))
 
 
 class InvoiceDetailView(generics.GenericAPIView):
