@@ -1,5 +1,3 @@
-The app is hosted on https://tranzact-2019186.herokuapp.com/
-
 The app has 3 major endpoints:
 # 1. /users/
 This endpoint has 2 methods: GET and POST.
